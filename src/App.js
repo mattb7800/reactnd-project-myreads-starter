@@ -1,98 +1,103 @@
 import React, { Component } from 'react'
-import { Route } from 'react-router-dom';
+import { Route } from 'react-router-dom'
+import BooksShelf from './BooksShelf'
+import BooksSearch from './BooksSearch'
 import './App.css'
-import * as BooksAPI from './BooksAPI';
-import Search from './Search';
-import BookCase from './BookCase';
+import * as BooksAPI from './BooksAPI'
 
 class BooksApp extends Component {
-  state = {
-    books: [],
-    showSearchPage: false
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      books: [],
+      booksResults: []
+    }
+
+    this.categoryNames =  [
+        {
+          shelfTitle: 'Currently Reading',
+          shelf: 'currentlyReading'
+        },
+        {
+          shelfTitle: 'Want to Read',
+          shelf: 'wantToRead'
+        },
+        {
+          shelfTitle: 'Read',
+          shelf: 'read'
+        },
+        {
+          shelfTitle: 'None',
+          shelf: 'none'
+        }
+      ]
+
+    this.updateBook = this.updateBook.bind(this);
+    this.search = this.search.bind(this);
   }
 
-componentDidMount() {
-  BooksAPI.getAll().then(books => {
-    this.setState({ books });
-  });
-}
+  componentDidMount() {
+    BooksAPI.getAll().then((books) => {
+      this.setState({ books })
+    })
+  }
 
-updateBook= (book, shelf) => {
-  this.setState(previousState => {
-    if (shelf === 'none') {
-      return {
-        books: previousState.books.filter(
-          currentBook => currentBook.id !== book.id
-        )
-      };
-    }
-    return {
-      books: previousState.books.map(currentBook => {
-        if (currentBook.id === book.id) {
-          currentBook.shelf = shelf;
-        }
-        return currentBook;
+  updateBook = (book, shelf) => {
+    book.shelf = shelf
+
+    BooksAPI.update(book, shelf).then(() => {
+      this.setState({
+        books: this.state.books.filter(books => books.id !== book.id).concat([ book ])
       })
-    };
-  });
-};
+    })
+  }
 
-////////////////////////////////////////////////////
+  search(query) {
+    const maxResults = 30;
 
-addBook = (book, shelf) => {
-        this.setState(previousState => {
-            book.shelf = shelf;
-            previousState.books.push(book);
-            return {
-                books: previousState.books
-            };
-        });
-};
-/////////////////////////////
-checkIsNewBook = book => {
-       const shelfBooks = this.state.books.filter(
-           shelfBook => shelfBook.id === book.id
-       );
-       return shelfBooks.length === 0;
-};
-   ////we need to check if the book is new then we need to add it on the shelf  else just we need to  update the book location
-   changeShelfOfBook = (book, shelf) => {
-       if (this.checkIsNewBook(book)) {
-           this.addBook(book, shelf);
-       } else {
-           this.updateBook(book, shelf);
-         }
+    BooksAPI.search(query, maxResults).then((books) => {
+      if (books === undefined || books.error !== undefined) {
+        this.setState({ booksResults: [] })
+      } else {
+        books.map(book => {
+          this.state.books.forEach(userBook => {
+            if (book.id === userBook.id) {
+              book.shelf = userBook.shelf
+            } else if (book.shelf === undefined) {
+              book.shelf = 'none'
+            }
+          })
 
-       BooksAPI.update(book, shelf);
-   };
+          return book
+        })
 
-   //////Update Search status function
-   updateSearchStatus = showSearchPage => {
-           this.setState({ showSearchPage: true });
+        this.setState({ booksResults: books })
+      }
+    })
+  }
+
+  render() {
+    return (
+      <div className="app">
+        <Route exact path="/" render={() => (
+          <BooksShelf
+            books={this.state.books}
+            onUpdateBook={this.updateBook}
+            categoryNames={this.categoryNames}
+          />
+        )}/>
+
+        <Route path="/search" render={({ history }) => (
+          <BooksSearch
+            booksResults={this.state.booksResults}
+            onSearch={this.search}
+            onCreateBook={this.updateBook}
+          />
+        )}/>
+      </div>
+    )
+  }
 }
 
-render() {
-          return (
-
-            <div className = "app" >
-              <Route exact path = "/"
-              render = {
-                  () =>
-                  <BookCase books = { this.state.books }
-                  updateBook = { this.changeShelfOfBook }
-                  />}
-              />
-
-                  <Route path = "/search"
-                  render = { () =>
-                      <Search
-                      books = { this.state.books }
-                      updateBook = { this.changeShelfOfBook }
-                      showSearchPage = { this.updateSearchStatus }
-                      />} / >
-
-            </div>
-                  );
-              }
-          }
 export default BooksApp
