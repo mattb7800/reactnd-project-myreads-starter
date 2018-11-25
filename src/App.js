@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Route } from 'react-router-dom'
+import { Route, BrowserRouter } from 'react-router-dom'
 import BooksShelf from './BooksShelf'
 import BooksSearch from './BooksSearch'
 import './App.css'
@@ -80,21 +80,21 @@ class BooksApp extends Component {
   render() {
     return (
       <div className="app">
-        <Route exact path="/" render={() => (
+        <BrowserRouter><Route exact path="/" render={() => (
           <BooksShelf
             books={this.state.books}
             onUpdateBook={this.updateBook}
             categoryNames={this.categoryNames}
           />
-        )}/>
+        )}/></BrowserRouter>
 
-        <Route path="/search" render={({ history }) => (
+        <BrowserRouter><Route path="/search" render={({ history }) => (
           <BooksSearch
             booksResults={this.state.booksResults}
             onSearch={this.search}
             onCreateBook={this.updateBook}
           />
-        )}/>
+        )}/></BrowserRouter>
       </div>
     )
   }
