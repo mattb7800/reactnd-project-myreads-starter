@@ -1,102 +1,96 @@
-import React, { Component } from 'react'
-import { Route, BrowserRouter } from 'react-router-dom'
-import BooksShelf from './BooksShelf'
-import BooksSearch from './BooksSearch'
-import './App.css'
+import React from 'react'
+import {Route, BrowserRouter} from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
+import './App.css'
+import BookCase from './BookCase'
+import Search from './Search'
 
-class BooksApp extends Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      books: [],
-      booksResults: []
-    }
-
-    this.categoryNames =  [
-        {
-          shelfTitle: 'Currently Reading',
-          shelf: 'currentlyReading'
-        },
-        {
-          shelfTitle: 'Want to Read',
-          shelf: 'wantToRead'
-        },
-        {
-          shelfTitle: 'Read',
-          shelf: 'read'
-        },
-        {
-          shelfTitle: 'None',
-          shelf: 'none'
-        }
-      ]
-
-    this.updateBook = this.updateBook.bind(this);
-    this.search = this.search.bind(this);
+class BooksApp extends React.Component {
+  state = {
+    books: [],
+    showSearchPage: false
   }
 
   componentDidMount() {
-    BooksAPI.getAll().then((books) => {
-      this.setState({ books })
-    })
+    BooksAPI.getAll().then(books => {
+      this.setState({books});
+    });
   }
-
+// Place Book on shelf //
   updateBook = (book, shelf) => {
-    book.shelf = shelf
-
-    BooksAPI.update(book, shelf).then(() => {
-      this.setState({
-        books: this.state.books.filter(books => books.id !== book.id).concat([ book ])
-      })
-    })
-  }
-
-  search(query) {
-    const maxResults = 30;
-
-    BooksAPI.search(query, maxResults).then((books) => {
-      if (books === undefined || books.error !== undefined) {
-        this.setState({ booksResults: [] })
-      } else {
-        books.map(book => {
-          this.state.books.forEach(userBook => {
-            if (book.id === userBook.id) {
-              book.shelf = userBook.shelf
-            } else if (book.shelf === undefined) {
-              book.shelf = 'none'
-            }
-          })
-
-          return book
-        })
-
-        this.setState({ booksResults: books })
+    this.setState(previousState => {
+      if (shelf === 'none') {
+        return {
+          books: previousState.books.filter(
+            currentBook => currentBook.id !== book.id
+          )
+        };
       }
-    })
-  }
+      return {
+        books: previousState.books.map(currentBook => {
+          if (currentBook.id === book.id) {
+            currentBook.shelf = shelf;
+          }
+          return currentBook;
+        })
+      };
+    });
+  };
+/// add book ////
+  addBook = (book, shelf) => {
+    this.setState(previousState => {
+      book.shelf = shelf;
+      previousState.books.push(book);
+      return {
+        books: previousState.books
+      };
+    });
+  };
+// using filter method to check if book is new //
+checkIsNewBook = book => {
+  const shelfBooks = this.state.books.filter(
+    shelfBook => shelfBook.id === book.id
+  );
+  return shelfBooks.length === 0;
+};
 
+
+changeShelfOfBook = (book, shelf) => {
+    if(this.checkIsNewBook (book)) {
+      this.addBook(book, shelf);
+    } else {
+      this.updateBook(book, shelf);
+
+    }
+    BooksAPI.update(book, shelf);
+  };
+
+  updateSearchStatus = showSearchPage => {
+    this.setState({showSearchPage: true});
+  }
   render() {
     return (
-      <div className="app">
-        <BrowserRouter><Route exact path="/" render={() => (
-          <BooksShelf
-            books={this.state.books}
-            onUpdateBook={this.updateBook}
-            categoryNames={this.categoryNames}
-          />
-        )}/></BrowserRouter>
+      <div className= 'app'>
+      <BrowserRouter><Route exact path ='/'
+      render= {() =>
+        <BookCase
+        books = {this.state.books}
+        updateBook ={this.changeShelfOfBook}
+        />
+      }/></BrowserRouter>
 
-        <BrowserRouter><Route path="/search" render={({ history }) => (
-          <BooksSearch
-            booksResults={this.state.booksResults}
-            onSearch={this.search}
-            onCreateBook={this.updateBook}
-          />
-        )}/></BrowserRouter>
+      <BrowserRouter><Route path = '/search'
+      render = {() =>
+        <Search
+        books = {this.state.books}
+        updateBook = {this.changeShelfOfBook}
+        showSearchPage = {this.updateSearchStatus}
+        />
+      }/></BrowserRouter>
       </div>
-    )
+    );
+
   }
 }
 
