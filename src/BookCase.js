@@ -12,7 +12,7 @@ class BookCase extends Component {
       ]
   };
 
-getBooksByFilterShelf = shelf => {
+putBooksOnShelf = shelf => {
   return this.props.books.filter(book => shelf.id === book.shelf);
 };
 
@@ -29,7 +29,7 @@ getBooksByFilterShelf = shelf => {
               <
               BookShelf key = {shelf.id}
               shelf = {shelf}
-              books = {this.getBooksByFilterShelf(shelf)}
+              books = {this.putBooksOnShelf(shelf)}
               updateBook = {this.props.updateBook}
               />
               )

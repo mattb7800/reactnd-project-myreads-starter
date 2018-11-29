@@ -4,20 +4,20 @@ import './App.css'
 import { Link } from 'react-router-dom'
 import Book from './Books';
 
-class Search extends Component {
+class SearchedBooks extends Component {
   state= {
     query: '',
-    maxResults: 20,
+    maxResults: 25,
     books: []
   };
 
 
 updateQuery = (query) => {
   this.setState({query: query});
-  this.Search(query);
+  this.searchedBooks(query);
 }
-///////////////////////////
-Search = (query) => {
+
+searchedBooks = (query) => {
   if (query === '') {
     this.setState({books: []});
   } else {
@@ -29,17 +29,17 @@ Search = (query) => {
   }
 };
 
-checkShelvesofBooks = (Search, currentBooks) => {
-    const shelvedBooks = Search.map(search => {
+checkShelvesofBooks = (searchedBooks, currentBooks) => {
+    const shelvedBooks = searchedBooks.map(searchedBook => {
       const currentBook = currentBooks.filter(
-        Book => Book.id === Search.id
+        Book => Book.id === searchedBook.id
       )[0];
       if (currentBook) {
-        Search.shelf = currentBook.shelf;
+        searchedBook.shelf = currentBook.shelf;
       } else {
-        Search.shelf = 'none'
+        searchedBook.shelf = 'none'
       }
-      return Search;
+      return searchedBook;
     });
     this.setState({books: shelvedBooks});
 };
@@ -54,7 +54,7 @@ checkShelvesofBooks = (Search, currentBooks) => {
           <div className='search-books-input-wrapper'>
             <
             input type ='text'
-            placeholder='Search by title or auther'
+            placeholder='Search by title or author'
             value = {this.state.query}
             onChange = {event => this.updateQuery(event.target.value)}
             />
@@ -75,4 +75,4 @@ checkShelvesofBooks = (Search, currentBooks) => {
     );
   }
 }
-export default Search
+export default SearchedBooks

@@ -1,9 +1,9 @@
 import React from 'react'
-import {Route, BrowserRouter} from 'react-router-dom'
+import {Route} from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 import BookCase from './BookCase'
-import Search from './Search'
+import SearchedBooks from './Search'
 
 
 class BooksApp extends React.Component {
@@ -18,6 +18,8 @@ class BooksApp extends React.Component {
     });
   }
 // Place Book on shelf //
+// Good info on using previousState: //
+// https://teamtreehouse.com/community/react-docs-now-recommends-using-function-with-prevstate-inside-of-setstate //
   updateBook = (book, shelf) => {
     this.setState(previousState => {
       if (shelf === 'none') {
@@ -48,7 +50,7 @@ class BooksApp extends React.Component {
     });
   };
 // using filter method to check if book is new //
-checkIsNewBook = book => {
+checkForNewBook = book => {
   const shelfBooks = this.state.books.filter(
     shelfBook => shelfBook.id === book.id
   );
@@ -56,8 +58,8 @@ checkIsNewBook = book => {
 };
 
 
-changeShelfOfBook = (book, shelf) => {
-    if(this.checkIsNewBook (book)) {
+updateShelfOfBook = (book, shelf) => {
+    if(this.checkForNewBook (book)) {
       this.addBook(book, shelf);
     } else {
       this.updateBook(book, shelf);
@@ -72,22 +74,22 @@ changeShelfOfBook = (book, shelf) => {
   render() {
     return (
       <div className= 'app'>
-      <BrowserRouter><Route exact path ='/'
+      <Route exact path ='/'
       render= {() =>
         <BookCase
         books = {this.state.books}
-        updateBook ={this.changeShelfOfBook}
+        updateBook ={this.updateShelfOfBook}
         />
-      }/></BrowserRouter>
+      }/>
 
-      <BrowserRouter><Route path = '/search'
+      <Route path = '/search'
       render = {() =>
-        <Search
+        <SearchedBooks
         books = {this.state.books}
-        updateBook = {this.changeShelfOfBook}
+        updateBook = {this.updateShelfOfBook}
         showSearchPage = {this.updateSearchStatus}
         />
-      }/></BrowserRouter>
+      }/>
       </div>
     );
 

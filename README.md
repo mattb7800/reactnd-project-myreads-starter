@@ -1,5 +1,23 @@
 # MyReads Project
 
+Allows a user to keep track of the books based on 3 statuses (Currently Reading, Want to Read and Read).
+
+
+##Install and Load App
+1. Download or Clone the repository:
+https://github.com/mattb7800/reactnd-project-myreads-starter.git
+2. cd to the directory the file was downloaded to
+3. run npm Install
+4. run npm start (this will start the program locally on port 3000).
+
+##Resources used
+Walk-thru by Doug Brown - Provided good info on breaking up the orignal starter code into its components.
+https://www.youtube.com/watch?v=OcL7-7cRpkQ&feature=youtu.be
+
+Mentor support from both Rasheed and Avi in Student Hub.
+
+----------------------------------------------------------------------------------
+
 This is the starter template for the final assessment project for Udacity's React Fundamentals course. The goal of this template is to save you time by providing a static example of the CSS and HTML markup that may be used, but without any of the React code that is needed to complete the project. If you choose to start with this template, your job will be to add interactivity to the app by refactoring the static code in this template.
 
 Of course, you are free to start this project from scratch if you wish! Just be sure to use [Create React App](https://github.com/facebookincubator/create-react-app) to bootstrap the project.
