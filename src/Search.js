@@ -23,9 +23,9 @@ updateQuery = (query) => {
 
 }
 
-searchedBooks = () => {
+searchedBooks () {
   if (this.state.query === '' || this.state.query === undefined) {
-    return this.setState({results: []});
+    return this.setState({books: []});
   } else {
     BooksAPI.search(this.state.query, this.maxResults).then(books => {
       if (Array.isArray(books)) {
@@ -33,7 +33,9 @@ searchedBooks = () => {
       }
     });
   }
+
 };
+
 
 checkShelvesofBooks = (searchedBooks, currentBooks) => {
     const shelvedBooks = searchedBooks.map(searchedBook => {

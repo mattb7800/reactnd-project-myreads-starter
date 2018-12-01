@@ -21,16 +21,16 @@ class BooksApp extends React.Component {
 // Good info on using previousState: //
 // https://teamtreehouse.com/community/react-docs-now-recommends-using-function-with-prevstate-inside-of-setstate //
   updateBook = (book, shelf) => {
-    this.setState(previousState => {
+    this.setState(prevState => {
       if (shelf === 'none') {
         return {
-          books: previousState.books.filter(
+          books: prevState.books.filter(
             currentBook => currentBook.id !== book.id
           )
         };
       }
       return {
-        books: previousState.books.map(currentBook => {
+        books: prevState.books.map(currentBook => {
           if (currentBook.id === book.id) {
             currentBook.shelf = shelf;
           }
@@ -41,11 +41,11 @@ class BooksApp extends React.Component {
   };
 /// add book ////
   addBook = (book, shelf) => {
-    this.setState(previousState => {
+    this.setState(prevState => {
       book.shelf = shelf;
-      previousState.books.push(book);
+      prevState.books.push(book);
       return {
-        books: previousState.books
+        books: prevState.books
       };
     });
   };
