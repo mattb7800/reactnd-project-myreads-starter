@@ -5,23 +5,29 @@ import { Link } from 'react-router-dom'
 import Book from './Books';
 
 class SearchedBooks extends Component {
-  state= {
-    query: '',
-    maxResults: 25,
-    books: []
-  };
+  constructor(props) {
+    super(props);
+    this.state= {
+      query: '',
+      maxResults: 25,
+      books: [],
+      results: []
+    }
+
+  }
+
 
 
 updateQuery = (query) => {
-  this.setState({query: query});
-  this.searchedBooks(query);
+  this.setState({query: query}, this.searchedBooks );
+
 }
 
-searchedBooks = (query) => {
-  if (query === '') {
-    this.setState({books: []});
+searchedBooks = () => {
+  if (this.state.query === '' || this.state.query === undefined) {
+    return this.setState({results: []});
   } else {
-    BooksAPI.search(query, this.maxResults).then(books => {
+    BooksAPI.search(this.state.query, this.maxResults).then(books => {
       if (Array.isArray(books)) {
         this.checkShelvesofBooks(books, this.props.books);
       }
