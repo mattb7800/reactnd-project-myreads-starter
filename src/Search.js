@@ -3,6 +3,8 @@ import * as BooksAPI from './BooksAPI'
 import './App.css'
 import { Link } from 'react-router-dom'
 import Book from './Books';
+//import escapeRegExp from 'escape-string-regexp'
+//import sortBy from 'sort-by'
 
 class SearchedBooks extends Component {
   constructor(props) {
@@ -11,7 +13,7 @@ class SearchedBooks extends Component {
       query: '',
       maxResults: 25,
       books: [],
-      results: []
+
     }
 
   }
@@ -19,22 +21,34 @@ class SearchedBooks extends Component {
 
 
 updateQuery = (query) => {
-  this.setState({query: query}, this.searchedBooks );
+  this.setState({query: query})
 
+   if(query !== null ||  query !== 'undefined'){
+     this.searchedBooks(query);
+
+  // Check for Query = invalid or nothing and we want empty array//
+   } else {
+     return this.setState({books: []})
+   }
 }
 
-searchedBooks () {
-  if (this.state.query === '' || this.state.query === undefined) {
-    return this.setState({books: []});
-  } else {
-    BooksAPI.search(this.state.query, this.maxResults).then(books => {
+searchedBooks = (query) => {
+  if (query){
+    BooksAPI.search(this.state.query, this.maxResults).then((books) => {
       if (Array.isArray(books)) {
         this.checkShelvesofBooks(books, this.props.books);
+      } else {
+        this.setState({books: []});
       }
-    });
-  }
+    })
+    .catch((err) => {
+      console.log('no books with that criteria' + err);
+    })
 
-};
+  }else {
+    this.setState({books: []})
+  }
+}
 
 
 checkShelvesofBooks = (searchedBooks, currentBooks) => {
@@ -53,6 +67,7 @@ checkShelvesofBooks = (searchedBooks, currentBooks) => {
 };
 
   render() {
+
     return (
       <div className='search-books'>
         <div className='search-books-bar'>
@@ -64,7 +79,7 @@ checkShelvesofBooks = (searchedBooks, currentBooks) => {
             input type ='text'
             placeholder='Search by title or author'
             value = {this.state.query}
-            onChange = {event => this.updateQuery(event.target.value)}
+            onChange = {(event) => this.updateQuery(event.target.value)}
             />
           </div>
         </div>
