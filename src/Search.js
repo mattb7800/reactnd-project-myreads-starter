@@ -34,7 +34,7 @@ updateQuery = (query) => {
 
 searchedBooks = (query) => {
   if (query){
-    BooksAPI.search(this.state.query, this.maxResults).then((books) => {
+    BooksAPI.search(query, this.maxResults).then((books) => {
       if (Array.isArray(books)) {
         this.checkShelvesofBooks(books, this.props.books);
       } else {
@@ -42,7 +42,7 @@ searchedBooks = (query) => {
       }
     })
     .catch((err) => {
-      console.log('no books with that criteria' + err);
+      console.log('[BooksAPI.search() error]: ' + err);
     })
 
   }else {
@@ -67,7 +67,7 @@ checkShelvesofBooks = (searchedBooks, currentBooks) => {
 };
 
   render() {
-
+    
     return (
       <div className='search-books'>
         <div className='search-books-bar'>
