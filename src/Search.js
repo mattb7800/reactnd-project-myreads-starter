@@ -67,7 +67,7 @@ checkShelvesofBooks = (searchedBooks, currentBooks) => {
 };
 
   render() {
-    
+
     return (
       <div className='search-books'>
         <div className='search-books-bar'>
@@ -84,6 +84,9 @@ checkShelvesofBooks = (searchedBooks, currentBooks) => {
           </div>
         </div>
         <div className='search-books-results'>
+          {this.state.query && this.state.books.length===0 && (
+            <p>No Results Matching Search Criteria</p>
+          )}
           <ol className='books-grid'>
             {this.state.books.map(book =>
               <
